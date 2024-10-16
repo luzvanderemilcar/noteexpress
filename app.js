@@ -1,3 +1,6 @@
+//server.js
+
+
 //jshint esversion:6
 
 
@@ -45,16 +48,7 @@ const noteSchema = {
 const Note = mongoose.model("Note", noteSchema);
 
 
-
-//Create a route to all notes and chaining request methods
-
-
-app.route("/notes")
-
-//Get all notes
-
-
-.get(function(req, res) {
+app.get("/notes", function(req, res) {
 
   Note.find((err, notes) => {
 
@@ -70,13 +64,14 @@ app.route("/notes")
 
   })
 
-})
+});
+
+//Add a note use postman to make the request with building client form
 
 
-//Add a note. We can use postman to make the request without building clientside form
+app.post("/notes", (req, res) => {
 
-
-.post((req, res) => {
+  const {title, content} = req.body;
 
   const newNote = new Note({
 
@@ -87,50 +82,8 @@ app.route("/notes")
   });
 
 
-//Save the note inside the database
-
-  newNote.save(err => {
-
-    if (!err) {
-
-      res.send("Note added successfully");
-
-    } else {
-
-     res.send(err);
-
-    }   
 
 });
-
-})
-
-
-//Delete all the note
-
-
-.delete((req, res) => {
-
-  Note.deleteMany((err) => {
-
-    if (!err) {
-
-      res.send("All the notes were deleted successfully");
-
-    } else {
-
-      res.send(err);
-
-    }
-
-  });
-
-});
-
-
-//Method on a specific note
-
-
 
 
 // Setting up server
@@ -140,4 +93,3 @@ app.listen(currentPort, function () {
   console.log("Server started on port" + defaultServerPort);
 
 });
-
