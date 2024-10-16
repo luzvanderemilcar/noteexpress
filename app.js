@@ -33,7 +33,65 @@ app.use(express.static("public"));
 
 //Setting up data base
 
-mongoose.connect(`mongodb://localhost:${currentMongoDBPort}/notes`);
+// User
+
+
+mongoose.connect(`mongodb://localhost:${currentMongoDBPort || 27017}/userDB`);
+
+
+const userSchema = {
+
+  email: String,
+
+  password: String
+
+};
+
+
+const User = mongoose.model("User", userSchema);
+
+
+// Home route
+
+app.get("/", (req, res) => {
+
+  res.render("home");
+
+});
+
+
+app.get("/register", (req, res) => {
+
+  res.render("register");
+
+});
+
+
+
+app.get("/login", (req, res) => {
+
+  res.render("login");
+
+});
+
+
+//Post requests
+
+
+app.post("/register", (req, res) => {
+
+  const newUser = new User({
+
+    email: req.body.user
+
+}); 
+
+});
+
+
+
+
+//mongoose.connect(`mongodb://localhost:${currentMongoDBPort}/notes`);
 
 
 const noteSchema = {
