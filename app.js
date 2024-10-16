@@ -266,6 +266,9 @@ app.route("/notes")
 app.route("/notes/:noteTitle")
 
 
+  // Get one article with route parameter :noteTitle
+
+
   .get((req, res) => {
 
       Note.findOne({ title: req.params.noteTitle }, (err, foundNote) => {
@@ -280,11 +283,12 @@ app.route("/notes/:noteTitle")
 
           }
 
-        })
+        });
+
       })
 
 
-    //Update an article with put method
+    //Update an article with put method. The body of the request (req.body) or the object provided will override or replace the whole document
 
 
     .put((req, res) => {
@@ -316,7 +320,8 @@ app.route("/notes/:noteTitle")
     })
 
 
-    //Update an article with patch method. The
+    //Update an article with patch method. The $set property specify the key-value pairs we want to update
+
 
     .patch((req, res) => {
 
@@ -345,6 +350,9 @@ app.route("/notes/:noteTitle")
     })
 
 
+    //Delete a specific article 
+
+
     .delete((req, res) => {
 
       Note.deleteOne(
@@ -366,8 +374,10 @@ app.route("/notes/:noteTitle")
         }
 
       );
+    })
 
     });
+    
     // Setting up server
 
     app.listen(currentPort, function() {
