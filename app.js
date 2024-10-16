@@ -100,6 +100,26 @@ app.post("/notes", (req, res) => {
 
 });
 
+//Delete all the note
+
+
+app.delete("/notes", (req, res) => {
+
+  Note.deleteMany(() => {
+
+    if (!err) {
+
+      res.send("All the article were deleted successfully");
+
+    } else {
+
+      res.send(err);
+
+    }
+
+  });
+
+});
 
 // Setting up server
 
