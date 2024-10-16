@@ -1,14 +1,6 @@
-//server.js
-
-
 //jshint esversion:6
 
-
-const defaultServerPort = process.env.PORT || 3000;
-
-const currentMongoDBPort = 27017;
-
-
+require("dotenv").config();
 const express = require("express");
 
 const bodyParser = require("body-parser");
@@ -18,7 +10,6 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 
 const encrypt = require("mongoose-encryption");
-
 
 //create express app
 
@@ -36,7 +27,7 @@ app.use(express.static("public"));
 // User
 
 
-mongoose.connect(`mongodb://localhost:${currentMongoDBPort || 27017}/userDB`);
+mongoose.connect(`mongodb://localhost:${process.env.MONGODB_PORT || 27017}/userDB`);
 
 
 const userSchema = new mongoose.Schema({
@@ -50,7 +41,7 @@ const userSchema = new mongoose.Schema({
 
 const secretKey = "This secret is not too secret";
 
-userSchema.plugin(encrypt, { secret: secretKey, fields: ["password"] });
+userSchema.plugin(encrypt, { secret: process.env.SECRET_KEY, fields: ["password"] });
 
 
 const User = mongoose.model("User", userSchema);
