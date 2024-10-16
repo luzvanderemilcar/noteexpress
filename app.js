@@ -66,12 +66,12 @@ app.get("/notes", function(req, res) {
 
 });
 
-//Add a note use postman to make the request with building client form
+//Add a note. We can use postman to make the request without building clientside form
 
 
 app.post("/notes", (req, res) => {
 
-  const {title, content} = req.body;
+  
 
   const newNote = new Note({
 
@@ -82,6 +82,21 @@ app.post("/notes", (req, res) => {
   });
 
 
+//Save the note inside the database
+
+  newNote.save(err => {
+
+    if (!err) {
+
+      res.send("Note added successfully");
+
+    } else {
+
+     res.send(err);
+
+    }   
+
+});
 
 });
 
