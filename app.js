@@ -130,7 +130,116 @@ app.route("/notes")
   });
 
 
+//Method on a specific note
 
+//Using a custom parameter noteTitle
+
+
+app.route("/notes/:noteTitle")
+
+
+  .get((req, res) => {
+
+      Note.findOne({ title: req.params.noteTitle }, (err, foundNote) => {
+
+          if (foundNote) {
+
+            res.send(foundNote);
+
+          } else {
+
+            res.send(err);
+
+          }
+
+        })
+      })
+
+
+    //Update an article with put method
+
+
+    .put((req, res) => {
+
+      Note.update(
+
+        { title: req.params.noteTitle },
+
+        { title: req.body.title, content: req.body.content },
+
+        { overwrite: true },
+
+        (err) => {
+
+          if (!err) {
+
+            res.send("Note updated successfully");
+
+          } else {
+
+            res.send(err);
+
+          }
+
+        }
+
+      );
+
+    })
+
+
+    //Update an article with patch method. The
+
+    .patch((req, res) => {
+
+      Note.update(
+
+        { title: req.params.noteTitle },
+
+        { $set: req.body },
+
+        (err) => {
+
+          if (!err) {
+
+            res.send("Note updated successfully");
+
+          } else {
+
+            res.send(err);
+
+          }
+
+        }
+
+      );
+
+    })
+
+
+    .delete((req, res) => {
+
+      Note.deleteOne(
+
+        { title: req.params.noteTitle },
+
+        (err) => {
+
+          if (!err) {
+
+            res.send("Note deleted successfully");
+
+          } else {
+
+            res.send(err);
+
+          }
+
+        }
+
+      );
+
+    });
     // Setting up server
 
     app.listen(currentPort, function() {
