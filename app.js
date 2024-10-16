@@ -17,6 +17,8 @@ const ejs = require("ejs");
 
 const mongoose = require("mongoose");
 
+const encrypt = require("mongoose-encryption");
+
 
 //create express app
 
@@ -31,21 +33,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 
-//Setting up data base
-
 // User
 
 
 mongoose.connect(`mongodb://localhost:${currentMongoDBPort || 27017}/userDB`);
 
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
 
   email: String,
 
   password: String
 
-};
+});
+
+
+const secretKey = "This secret is not too secret";
+
+userSchema.plugin(encrypt, { secret: secretKey, fields: ["password"] });
 
 
 const User = mongoose.model("User", userSchema);
