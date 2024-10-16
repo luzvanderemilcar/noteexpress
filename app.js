@@ -6,7 +6,7 @@
 
 const defaultServerPort = process.env.PORT || 3000;
 
-const currentMongoDBPort  = 27017;
+const currentMongoDBPort = 27017;
 
 
 const express = require("express");
@@ -26,7 +26,7 @@ const app = express();
 app.set("view engine", "ejs");
 
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
@@ -130,36 +130,11 @@ app.route("/notes")
   });
 
 
-//Method on a specific note
 
-//Using a custom parameter noteTitle
+    // Setting up server
 
+    app.listen(currentPort, function() {
 
-app.route("/notes/:noteTitle")
+      console.log("Server started on port" + defaultServerPort);
 
-
-  .get((req, res) => {
-
-      Note.findOne({ title: req.params.noteTitle }, (err, foundNote) => {
-
-          if (foundArticle) {
-
-            res.send(foundArticle);
-
-          } else {
-
-            res.send(err);
-
-          }
-
-        }
-
-      })
-
-// Setting up server
-
-app.listen(currentPort, function () {
-
-  console.log("Server started on port" + defaultServerPort);
-
-});
+    });
