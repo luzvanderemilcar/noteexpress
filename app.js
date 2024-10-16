@@ -114,37 +114,44 @@ app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
 
-  User.findOne({ email: username }, (err, foundUser) => {
+  app.post("/login", (req, res) => {
 
-    if (err) {
+      const { username, password } = req.body;
 
-      console.error(err);
 
-    } else {
+      User.findOne({ email: username }, (err, foundUser) => {
 
-      if (foundUser) {
+        if (err) {
 
-        if (foundUser.password === password) {
-
-          res.render("notes");
+          console.error(err);
 
         } else {
 
-          res.send("Wrong Password or wrong username");
+          if (foundUser) {
+
+            if (foundUser.password === password) {
+
+              res.render("notes");
+
+            } else {
+
+              // The password don't match the username one's.
+
+              res.send("Wrong Password or wrong username");
+
+            }
+
+          } else {
+
+            // No User Were found
+
+            res.send("Wrong username. Please Enter a valid username");
+
+          }
 
         }
 
-      } else {
-
-        // No User Were found
-
-        res.send("Wrong username. Please Enter a valid username");
-
-      }
-
-    }
-
-  });
+      });
 
 });
 
