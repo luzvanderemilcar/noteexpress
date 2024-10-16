@@ -78,13 +78,32 @@ app.get("/login", (req, res) => {
 //Post requests
 
 
+// Register
+
 app.post("/register", (req, res) => {
 
   const newUser = new User({
 
-    email: req.body.user
+    email: req.body.username,
 
-}); 
+    password: req.body.password
+
+  });
+
+
+  newUser.save(err => {
+
+    if (err) {
+
+      console.error(err);
+
+    } else {
+
+      res.render("notes");
+
+    }
+
+  });
 
 });
 
