@@ -107,7 +107,46 @@ app.post("/register", (req, res) => {
 
 });
 
+// Login
 
+app.post("/login", (req, res) => {
+
+  const { username, password } = req.body;
+
+
+  User.findOne({ email: username }, (err, foundUser) => {
+
+    if (err) {
+
+      console.error(err);
+
+    } else {
+
+      if (foundUser) {
+
+        if (foundUser.password === password) {
+
+          res.render("notes");
+
+        } else {
+
+          res.send("Wrong Password or wrong username");
+
+        }
+
+      } else {
+
+        // No User Were found
+
+        res.send("Wrong username. Please Enter a valid username");
+
+      }
+
+    }
+
+  });
+
+});
 
 
 //mongoose.connect(`mongodb://localhost:${currentMongoDBPort}/notes`);
