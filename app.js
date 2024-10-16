@@ -48,78 +48,113 @@ const noteSchema = {
 const Note = mongoose.model("Note", noteSchema);
 
 
-app.get("/notes", function(req, res) {
+//Create a route to all notes and chaining request methods
 
-  Note.find((err, notes) => {
 
-    if (!err) {
+app.route("/notes")
 
-      res.send(notes);
+  //Get all notes
 
-    } else {
 
-      res.send(err);
+  .get(function(req, res) {
 
-    }
+    Note.find((err, notes) => {
+
+      if (!err) {
+
+        res.send(notes);
+
+      } else {
+
+        res.send(err);
+
+      }
+
+    })
 
   })
 
-});
 
-//Add a note. We can use postman to make the request without building clientside form
+  //Add a note. We can use postman to make the request without building clientside form
 
 
-app.post("/notes", (req, res) => {
+  .post((req, res) => {
 
-  
+    const newNote = new Note({
 
-  const newNote = new Note({
+      title: req.body.title,
 
-    title : req.body.title,
+      content: req.body.content
 
-    content : req.body.content
+    });
+
+
+    //Save the note inside the database
+
+    newNote.save(err => {
+
+      if (!err) {
+
+        res.send("Note added successfully");
+
+      } else {
+
+        res.send(err);
+
+      }
+
+    });
+
+  })
+
+
+  //Delete all the note
+
+
+  .delete((req, res) => {
+
+    Note.deleteMany((err) => {
+
+      if (!err) {
+
+        res.send("All the notes were deleted successfully");
+
+      } else {
+
+        res.send(err);
+
+      }
+
+    });
 
   });
 
 
-//Save the note inside the database
+//Method on a specific note
 
-  newNote.save(err => {
-
-    if (!err) {
-
-      res.send("Note added successfully");
-
-    } else {
-
-     res.send(err);
-
-    }   
-
-});
-
-});
-
-//Delete all the note
+//Using a custom parameter noteTitle
 
 
-app.delete("/notes", (req, res) => {
+app.route("/notes/:noteTitle")
 
-  Note.deleteMany(() => {
 
-    if (!err) {
+  .get((req, res) => {
 
-      res.send("All the article were deleted successfully");
+      Note.findOne({ title: req.params.noteTitle }, (err, foundNote) => {
 
-    } else {
+          if (foundArticle) {
 
-      res.send(err);
+            res.send(foundArticle);
 
-    }
+          } else {
 
-  });
+            res.send(err);
 
-});
+          }
+
+        }
+
+      })
 
 // Setting up server
 
