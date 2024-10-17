@@ -92,33 +92,27 @@ app.post("/register", (req, res) => {
 
 // Login
 app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  User.findOne({ email: username }, (err, foundUser) => {
-    if (err) {
-      console.error(err);
-    } else {
-      if (foundUser) {
-        bcrypt.compare(password, foundUser.password, (error, result) => {
-          if (error) {
-            console.error("Error authenticating user", error);
-          }
-          if (result === true) {
-            res.render("notes");
-          } else {
-            // The password don't match the username one's.
-            console.log("Wrong Password or wrong username");
-            res.redirect("/login");
-          }
-        });
-
-      } else {
-        // No User Were found
-        res.send("Wrong username. Please Enter a valid username");
-      }
-    }
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password
   });
+  
+  req.login(user, (err) => {
+    if (err) {
+      console.error("Error login user ", err)
+    } else {
+      passport.authenticate("local")(req, res, ()=>{
+        res.redirect("/notes");
+      });
+      }
+    })
 });
+
+//Logout 
+app.get("/logout", ()=>{
+  req.logout();
+  res.redirect("/");
+})
 
 // Create a new collection for notes
 const noteSchema = {
