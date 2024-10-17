@@ -5,8 +5,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-
+const session = require("express-session");
+const passport = require("passport");
+const passportLocalMongoose = require("passportLocalMongoose");
 
 const currentPort = process.env.PORT || 3000;
 
@@ -18,15 +19,37 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+// Use session with a set of options
+app.use(session({
+  secrets: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Initialize passport
+app.use(passport.initialize());
+
+// Use passport to authenticate session
+app.use(passport.session());
+
 // Create new Data Base : userDB
 mongoose.connect(`mongodb://localhost:${process.env.MONGODB_PORT || 27017}/userDB`);
+//after Connection to prevent deprecation warning?
+mongoose.set({useCreateIndex: true});
 
 const userSchema = new mongoose.Schema({
-  email: String,
+  username: String,
   password: String
 });
+//plugin passportLocalMongoose 
+userSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model("User", userSchema);
+
+// create a user Strategies 
+app.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Get requests
 app.get("/", (req, res) => {
