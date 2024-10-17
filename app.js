@@ -65,29 +65,27 @@ app.get("/login", (req, res) => {
 
 });
 
+//Get all notes
+app.get("/notes", function(req, res) {
+    if (req.isAuthenticated()) {
+      res.render("notes");
+    } else  {
+      res.redirect("/login");
+    }
+  })
+
 //Post requests
 
 // Register
 app.post("/register", (req, res) => {
-  const password = req.body.password;
-
-  bcrypt.hash(password, saltRounds, (error, hash) => {
-    const newUser = new User({
-      email: req.body.username,
-      password: hash
-    });
-    
-    // Check the success of the operation
-    if (error) {
-      console.error("Error registering: ", error);
+  User.register({username: req.body.username}, req.body.password,  (err, user) => {
+    if (err) {
+      console.error("Error  registering user", err);
+      res.redirect("/register");
     } else {
-      newUser.save(err => {
-        if (err) {
-          console.error("Error saving instance: ", err);
-        } else {
-          res.render("notes");
-        }
-      });
+      passport.authenticate("local")(req, res, () => {
+        res.redirect("/notes");
+      })
     }
   });
 });
@@ -133,17 +131,6 @@ const Note = mongoose.model("Note", noteSchema);
 //Create a route to all notes and chaining request methods
 
 app.route("/notes")
-
-  //Get all notes
-  .get(function(req, res) {
-    Note.find((err, notes) => {
-      if (!err) {
-        res.send("notes");
-      } else {
-        res.send(err);
-      }
-    });
-  })
 
   //Add a note. We can use postman to make the request without building clientside form
   .post((req, res) => {
