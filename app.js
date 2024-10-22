@@ -68,7 +68,13 @@ app.get("/login", (req, res) => {
 //Get all notes
 app.get("/notes", function(req, res) {
     if (req.isAuthenticated()) {
-      res.render("notes");
+      Note.find((err, notes) => {
+        if (err) {
+          console.error(error);
+        } else {
+          res.render("notes", {allNotes: notes});
+        }
+      });
     } else  {
       res.redirect("/login");
     }
@@ -112,7 +118,22 @@ app.post("/login", (req, res) => {
 app.get("/logout", ()=>{
   req.logout();
   res.redirect("/");
+});
+
+// Submit
+app.route("/submit")
+.get((req, res) => {
+  if (req.isAuthenticated()) {
+    res.render("submit");
+  } else {
+    res.render("/login");
+  }
 })
+.post((req, res) => {
+  if (req.isAuthenticated()) {
+    
+  }
+});
 
 // Create a new collection for notes
 const noteSchema = {
@@ -122,7 +143,7 @@ const noteSchema = {
 
 const Note = mongoose.model("Note", noteSchema);
 
-//Create a route to all notes and chaining request methods
+//Create a route to all notes and chain request methods
 
 app.route("/notes")
 
@@ -136,7 +157,8 @@ app.route("/notes")
     //Save the note inside the database
     newNote.save(err => {
       if (!err) {
-        res.send("Note added successfully");
+        console.log("Note added successfully");
+        res.relaod(); 
       } else {
         res.send(err);
       }
@@ -177,7 +199,7 @@ app.route("/notes/:noteTitle")
       (err) => {
         if (!err) {
           console.log("Note updated successfully");
-          res.redirect("/notes/:noteTitle");
+          res.relaod();
         } else {
           res.send(err);
         }
@@ -191,7 +213,8 @@ app.route("/notes/:noteTitle")
     Note.update({ title: req.params.noteTitle }, { $set: req.body },
       (err) => {
         if (!err) {
-          res.send("Note updated successfully");
+          console.log("Note updated successfully");
+          res.relaod();
         } else {
           res.send(err);
         }
@@ -205,12 +228,16 @@ app.route("/notes/:noteTitle")
     Note.deleteOne({ title: req.params.noteTitle },
       (err) => {
         if (!err) {
-          res.send("Note deleted successfully");
+          console.log("Note deleted successfully");
+          res.redirect("/notes");
         } else {
-          res.send("Error deleting note", err);
+          console.error("Error deleting note", err);
+          res.reload();
         }
       });
   });
+  
+//
 
 // Setting up server
 
