@@ -1,21 +1,26 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-<div class="jumbotron text-center">
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<body>
+  <div class="jumbotron text-center">
   <div class="container">
-    <i class="fas fa-key fa-6x"></i>
-    <h1 class="display-3">Notes</h1>
-    <p class="secret-text">Capture your ideas has they come up.</p>
+    <%- include('partials/lead') %>
     <hr>
-    <% allNotes.forEach(note => {%>
+    <% locals.allNotes.forEach(note => {%>
     <div class="card" idnote=<%= note.id %> >
       <h4 class="card-heading"><%= note.title %></h4>
       <hr>
       <div class="card-content"><%= note.content %></div>
     </div>
     <%}%>
+    
     <a class="btn btn-light btn-lg" href="/logout" role="button">Log Out</a>
     <a class="btn btn-dark btn-lg" href="/submit" role="button">Add a note</a>
   </div>
 </div>
 
 <%- include('partials/footer') %>
+</body>
+</html>

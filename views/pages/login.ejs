@@ -1,8 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  
+<%- include('partials/head') %>
 <%- include('partials/header') %>
 
-<div class="container mt-5">
-  <h1>Login</h1>
-
+<body>
+  <div class="container mt-5">
+<%- include('partials/lead') %>
   <div class="row">
     <div class="col-sm-8">
       <div class="card">
@@ -20,7 +24,7 @@
             </div>
             <button type="submit" class="btn btn-dark">Login</button>
           </form>
-
+<p>Have no account. <a href="/register">Register</a></p>
         </div>
       </div>
     </div>
@@ -40,3 +44,6 @@
 </div>
 
 <%- include('partials/footer') %>
+
+</body>
+</html>

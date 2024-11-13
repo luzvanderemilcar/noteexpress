@@ -35,7 +35,7 @@ app.use(passport.session());
 // Create new Data Base : userDB
 mongoose.connect(`mongodb://localhost:${process.env.MONGODB_PORT || 27017}/userDB`);
 //after Connection to prevent deprecation warning?
-mongoose.set({useCreateIndex: true});
+mongoose.set({ useCreateIndex: true });
 
 const userSchema = new mongoose.Schema({
   username: String,
@@ -67,31 +67,31 @@ app.get("/login", (req, res) => {
 
 //Get all notes
 app.get("/notes", function(req, res) {
-    if (req.isAuthenticated()) {
-      Note.find((err, notes) => {
-        if (err) {
-          console.error(error);
-        } else {
-          res.render("notes", {allNotes: notes});
-        }
-      });
-    } else  {
-      res.redirect("/login");
-    }
-  })
+  if (req.isAuthenticated()) {
+    Note.find({ userId: req.user.id }, (err, notes) => {
+      if (err) {
+        console.error(error);
+      } else {
+        res.render("notes", { allNotes: notes });
+      }
+    });
+  } else {
+    res.redirect("/login");
+  }
+})
 
 //Post requests
 
 // Register
 app.post("/register", (req, res) => {
-  User.register({username: req.body.username}, req.body.password,  (err, user) => {
+  User.register({ username: req.body.username }, req.body.password, (err, user) => {
     if (err) {
-      console.error("Error  registering user", err);
+      console.error("Error registering user", err);
       res.redirect("/register");
     } else {
       passport.authenticate("local")(req, res, () => {
         res.redirect("/notes");
-      })
+      });
     }
   });
 });
@@ -102,44 +102,47 @@ app.post("/login", (req, res) => {
     username: req.body.username,
     password: req.body.password
   });
-  
+
   req.login(user, (err) => {
     if (err) {
       console.error("Error login user ", err)
     } else {
-      passport.authenticate("local")(req, res, ()=>{
+      passport.authenticate("local")(req, res, () => {
         res.redirect("/notes");
       });
-      }
-    })
+    }
+  })
 });
 
 //Logout 
-app.get("/logout", ()=>{
+app.get("/logout", () => {
   req.logout();
   res.redirect("/");
 });
 
 // Submit
 app.route("/submit")
-.get((req, res) => {
-  if (req.isAuthenticated()) {
-    res.render("submit");
-  } else {
-    res.render("/login");
-  }
-})
-.post((req, res) => {
-  if (req.isAuthenticated()) {
-    
-  }
-});
+  .get((req, res) => {
+    if (req.isAuthenticated()) {
+      res.render("submit");
+    } else {
+      res.redirect("/login");
+    }
+  })
+  .post((req, res) => {
+    if (req.isAuthenticated()) {
+
+    }
+  });
 
 // Create a new collection for notes
-const noteSchema = {
+const noteSchema = mongoose.Schema({
   title: String,
-  content: String
-};
+  content: String,
+  userId: String,
+  created: String,
+  modified: String
+});
 
 const Note = mongoose.model("Note", noteSchema);
 
@@ -149,26 +152,32 @@ app.route("/notes")
 
   //Add a note. We can use postman to make the request without building clientside form
   .post((req, res) => {
+    if (req.isAuthenticated()) {
     const newNote = new Note({
       title: req.body.title,
-      content: req.body.content
+      content: req.body.content,
+      userId: req.user.id,
+      created: new Date()
     });
 
     //Save the note inside the database
     newNote.save(err => {
       if (!err) {
         console.log("Note added successfully");
-        res.relaod(); 
+        res.reload();
       } else {
         res.send(err);
       }
     });
+    } else {
+      res.redirect("/login");
+    }
   })
 
 
   //Delete all the note
   .delete((req, res) => {
-    Note.deleteMany((err) => {
+    Note.deleteMany({userId : req.user.id}, (err) => {
       if (!err) {
         res.send("All the notes were deleted successfully");
       } else {
@@ -184,13 +193,17 @@ app.route("/notes/:noteTitle")
 
   // Get one article with route parameter :noteTitle
   .get((req, res) => {
-    Note.findOne({ title: req.params.noteTitle }, (err, foundNote) => {
+    if (req.isAuthenticated()) {
+    Note.findOne({userId: req.user.id, title: req.params.noteTitle }, (err, foundNote) => {
       if (foundNote) {
         res.send(foundNote);
       } else {
         res.send(err);
       }
     });
+    } else {
+      res.redirect("/login")
+    }
   })
 
   //Update an article with put method. The body of the request (req.body) or the object provided will override or replace the whole document
@@ -236,7 +249,7 @@ app.route("/notes/:noteTitle")
         }
       });
   });
-  
+
 //
 
 // Setting up server
